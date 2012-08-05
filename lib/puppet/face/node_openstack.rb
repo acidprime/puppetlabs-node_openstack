@@ -56,14 +56,6 @@ Puppet::Face.define(:node_openstack, '0.0.1') do
     default_to { '5000' }
   end
 
-  action.option '--image_name=' do
-    summary 'Open stack image name'
-    description <<-EOT
-      The name of the image that exists on the system
-    EOT
-   required
-  end
-  
   action.option '--tenant_name=' do
     summary 'Tenant / Group name'
     description <<-EOT
@@ -71,14 +63,15 @@ Puppet::Face.define(:node_openstack, '0.0.1') do
     EOT
    required
   end
-  
+
   action.option '--security_group=' do
     summary 'Security Group'
     description <<-EOT
       The name of the  flavor to create the instance with
     EOT
   default_to { 'default' } 
-  end
+  end 
+ 
   summary "View and manage openstack nodes."
   description <<-'EOT'
     This subcommand provides a command line interface to manage Openstack
