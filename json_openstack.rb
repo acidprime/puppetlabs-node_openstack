@@ -244,7 +244,20 @@ class OpenStackAPI
    end
    return flavor_names
  end
- 
+
+ def get_key_names(flavor_tenant_id = nil)
+   path    = "/v2/#{flavor_tenant_id}/os-keypairs"
+   options = {
+    'api'  => 'nova',
+    'type' => 'get', }
+    json_response = http_request(path,options,'Get Keynames','200')
+    key_names = []
+    key_hash = json_response['keypairs'].select do |keypair|
+      key_names.push(keypair['name'])
+   end
+   return key_names
+ end
+
  def put_rename(name)
    path = "/v2/#{@tenant_id}/servers/#{@server}"
    body = {"server" =>
@@ -281,8 +294,12 @@ class OpenStackAPI
    post_security_group_rule(hash)
  end
 
- def terminate(instance_id)
-   delete_terminate_instance_by_id('1')
+ def terminate(instance_name)
+   delete_terminate_instance_by_id(instance_name)
+ end
+
+ def key_pairs()
+   get_key_names(@tenant_id)
  end
 
  def flavors()

@@ -1,6 +1,5 @@
 require 'puppet/cloudpack'
 require 'puppet/face/node_openstack'
-require 'puppet/face/json_openstack'
 Puppet::Face.define :node_openstack, '0.0.1' do
 
   action :create do
