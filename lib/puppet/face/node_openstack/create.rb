@@ -36,7 +36,7 @@ Puppet::Face.define :node_openstack, '0.0.1' do
       required
     end
 
-    action.option '--image=' do
+    option '--image=' do
       summary 'Open stack image name'
       description <<-EOT
         The name of the image that exists on the system
