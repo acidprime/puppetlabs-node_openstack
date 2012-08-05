@@ -19,6 +19,7 @@ class OpenStackAPI
  attr_accessor :image_name
  attr_accessor :flavor_name
  attr_accessor :security_group
+
  def api_detect(options)
    # Default to using a token if we have one
    options['header'] = {
@@ -287,12 +288,12 @@ class OpenStackAPI
 
  def create(options)
    process_options(options)
-   @image_id  = get_image_id(@image_name)
-   @flavor_id = get_flavor_id(@flavor_name)
+   @image_id  = get_image_id(@image)
+   @flavor_id = get_flavor_id(@type)
    @security_group_id = get_security_group_id(@security_group)
-   until post_new_server(@image)
+   until post_new_server(@name)
    end
-   return get_server_id(@image)
+   return get_server_id(@name)
  end
 
  def rule(hash = {}, name = 'default')
