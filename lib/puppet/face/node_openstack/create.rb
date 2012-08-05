@@ -1,6 +1,5 @@
 require 'puppet/cloudpack'
 require 'puppet/face/node_openstack'
-require 'puppet/face/openstack_api'
 Puppet::Face.define :node_openstack, '0.0.2' do
 
   action :create do
@@ -69,7 +68,7 @@ Puppet::Face.define :node_openstack, '0.0.2' do
     end
 
     when_invoked do |options|
-      api = OpenStackAPI.new
+      api = Puppet::OpenStackAPI.new
       api.create_connection(options)
       api.create(options)
     end
