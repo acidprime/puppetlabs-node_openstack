@@ -1,9 +1,7 @@
-require 'puppet/cloudpack'
 require 'puppet/face/node_openstack'
 Puppet::Face.define :node_openstack, '0.0.2' do
 
   action :create do
-
     summary 'Create a new machine instance.'
     description <<-EOT
       Launches a new OpenStack machine instance and returns the
@@ -15,6 +13,8 @@ Puppet::Face.define :node_openstack, '0.0.2' do
       If creation of the instance fails, Puppet will automatically clean up
       after itself and tear down the instance.
     EOT
+
+    Puppet::OpenStackApi.new.add_connection_options(self)
 
     option '--name=' do
       summary 'The name of your new instance'
@@ -61,16 +61,14 @@ Puppet::Face.define :node_openstack, '0.0.2' do
       #required
 
       before_action do |action, args, options|
-        if Puppet::CloudPack.create_connection(options).key_pairs.get(options[:keyname]).nil?
+        if not Puppet::OpenStackApi.new.key_pairs(options).include?(options[:keyname])
           raise ArgumentError, "Unrecognized key name: #{options[:keyname]} (Suggestion: use the puppet node_openstack list_keynames action to find a list of valid key names for your account.)"
         end
       end
     end
 
     when_invoked do |options|
-      api = Puppet::OpenStackApi.new
-      api.create_connection(options)
-      api.create(options)
+      Puppet::OpenStackApi.new.create_connection(options).create(options)
     end
   end
 end

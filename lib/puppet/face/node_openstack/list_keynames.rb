@@ -1,5 +1,4 @@
 require 'puppet/face/node_openstack'
-require 'puppet/cloudpack'
 
 Puppet::Face.define :node_openstack, '0.0.1' do
 
@@ -14,15 +13,15 @@ Puppet::Face.define :node_openstack, '0.0.1' do
       `--keyname` option.
     EOT
 
-    Puppet::CloudPack.add_platform_option(self)
+    Puppet::OpenStackApi.new.add_connection_options(self)
 
     when_invoked do |options|
-      Puppet::CloudPack.list_keynames(options)
+      Puppet::OpenStackApi.new.list_keynames(options)
     end
 
     when_rendering :console do |value|
       value.collect do |key_hash|
-        "#{key_hash['name']} (#{key_hash['fingerprint']})"
+        "#{key_hash['keypair']['name']} (#{key_hash['keypair']['fingerprint']})"
       end.sort.join("\n")
     end
 

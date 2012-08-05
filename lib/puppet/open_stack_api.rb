@@ -79,6 +79,7 @@ module Puppet
    end
    
    def handle_json_response(response, action, expected_code='200')
+     #Puppet.info "#{response.body}"
      if response.code == expected_code
        Puppet.info "#{action} ... Done"
        PSON.parse response.body
@@ -243,17 +244,28 @@ module Puppet
      end
      return flavor_names
    end
-  
-   def get_key_names(flavor_tenant_id = nil)
+
+   def get_key_hashes(flavor_tenant_id)
      path    = "/v2/#{flavor_tenant_id}/os-keypairs"
      options = {
       'api'  => 'nova',
       'type' => 'get', }
-      json_response = http_request(path,options,'Get Keynames','200')
-      key_names = []
-      key_hash = json_response['keypairs'].select do |keypair|
-        key_names.push(keypair['name'])
+     json_response = http_request(path,options,'Get Keyhashes','200')     
+     key_hash = json_response['keypairs']
+     return key_hash
+   end
+
+   def get_key_names(flavor_tenant_id)
+     path    = "/v2/#{flavor_tenant_id}/os-keypairs"
+     options = {
+      'api'  => 'nova',
+      'type' => 'get', }
+     json_response = http_request(path,options,'Get Keynames','200')
+       key_names = []
+       key_hash = json_response['keypairs'].select do |keypair|
+       key_names.push(keypair['keypair']['name'])
      end
+     Puppet.info key_names
      return key_names
    end
   
@@ -271,6 +283,7 @@ module Puppet
     process_options(options)
     @token = post_xauthkey(@identity_username,@identity_password)
     @tenant_id = get_tenant_id(@tenant_name)
+    return self
    end
   
    def process_options(options)
@@ -304,12 +317,88 @@ module Puppet
      delete_terminate_instance_by_id(instance_name)
    end
   
-   def key_pairs()
+   def key_pairs(options)
+     create_connection(options)
      get_key_names(@tenant_id)
    end
-  
+
+   def list_keynames(options)
+     create_connection(options)
+     get_key_hashes(@tenant_id)
+   end
+
    def flavors()
      get_flavor_names(@tenant_id)
    end
+
+   def add_connection_options(action)
+      action.option '--identity_username=' do
+        summary 'Open stack username'
+        description <<-EOT
+          Username to use with the Identity API
+          used to create an authentication token
+        EOT
+        required
+      end
+
+      action.option '--identity_password=' do
+        summary 'Open stack password'
+        description <<-EOT
+          Password to use with the Identity API
+          used to create an authentication token
+        EOT
+        required
+      end
+
+      action.option '--nova_port=' do
+        summary 'Nova compute port'
+        description <<-EOT
+          The nova computer API port
+          defaults to 8774
+        EOT
+        default_to { '8774' }
+      end
+
+      action.option '--nova_host=' do
+        summary 'The nova compute host'
+        description <<-EOT
+          The hostname or IP address of the nova compute host
+        EOT
+        required
+      end
+
+      action.option '--keystone_host=' do
+        summary 'The keystone indentity api host'
+        description <<-EOT
+          The hostname or IP address of the keystone indentity host
+        EOT
+        required
+      end
+
+      action.option '--keystone_port=' do
+        summary 'Open stack password'
+        description <<-EOT
+          Password to use with the Identity API
+          used to create an authentication token
+        EOT
+        default_to { '5000' }
+      end
+
+      action.option '--tenant_name=' do
+        summary 'Tenant / Group name'
+        description <<-EOT
+          The name of the tenant (group) name to use
+        EOT
+       required
+      end
+
+      action.option '--security_group=' do
+        summary 'Security Group'
+        description <<-EOT
+          The name of the  flavor to create the instance with
+        EOT
+        default_to { 'default' } 
+      end 
+    end
   end
 end
