@@ -1,4 +1,3 @@
-require 'puppet/cloudpack'
 require 'puppet/face/node_openstack'
 
 Puppet::Face.define :node_openstack, '0.0.1' do
@@ -12,21 +11,24 @@ Puppet::Face.define :node_openstack, '0.0.1' do
       by the specified api endpoint are listed.
     EOT
 
-    Puppet::CloudPack.add_platform_option(self)
+    Puppet::OpenStackApi.new.add_connection_options(self)
 
     when_invoked do |options|
-      Puppet::CloudPack.create_connection(options).images
+      Puppet::OpenStackApi.new.images(options)
     end
 
     when_rendering :console do |value|
       value.collect do |image|
-        "#{image.id}:\n" + image.attributes.collect do |field, val|
-          if(val and val != [] and val != {} and field != :id)
-            "  #{field}: #{val.inspect}"
+        "#{image['id']}" + image.map do |field,val|
+          if(val and val != [] and val != {} and field != 'id')
+            if(val.is_a?(Array))
+              val.each {|v| print v, "#{field} = #{v}" }
+            else
+              "#{field} = #{val}"
+            end
           end
-        end.compact.sort.join("\n")
-      end.sort.join("\n")
+        end.join("\n")
+      end.join("\n")
     end
-
   end
 end

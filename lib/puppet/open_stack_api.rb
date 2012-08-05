@@ -261,14 +261,23 @@ module Puppet
       'api'  => 'nova',
       'type' => 'get', }
      json_response = http_request(path,options,'Get Keynames','200')
-       key_names = []
-       key_hash = json_response['keypairs'].select do |keypair|
+     key_names = []
+     key_hash = json_response['keypairs'].select do |keypair|
        key_names.push(keypair['keypair']['name'])
      end
      Puppet.info key_names
      return key_names
    end
-  
+ 
+   def get_image_details(image_tenant_id)
+     path    = "/v2/#{image_tenant_id}/images/detail"
+     options = {
+      'api'  => 'nova',
+      'type' => 'get', }
+     json_response = http_request(path,options,'Get Image details','200')
+     return json_response['images']
+   end
+
    def put_rename(name)
      path = "/v2/#{@tenant_id}/servers/#{@server}"
      body = {"server" =>
@@ -325,6 +334,11 @@ module Puppet
    def list_keynames(options)
      create_connection(options)
      get_key_hashes(@tenant_id)
+   end
+
+   def images(options)
+     create_connection(options)
+     get_image_details(@tenant_id)
    end
 
    def flavors()
@@ -397,8 +411,8 @@ module Puppet
         description <<-EOT
           The name of the  flavor to create the instance with
         EOT
-        default_to { 'default' } 
-      end 
+        default_to { 'default' }
+      end
     end
   end
 end
