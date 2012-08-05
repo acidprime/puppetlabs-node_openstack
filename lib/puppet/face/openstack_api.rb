@@ -7,10 +7,9 @@ require 'puppet'
 # Open stack native API calls
 # http://api.openstack.org/
 
-module Puppet::CloudPack
-  class << self
- attr_accessor :username
- attr_accessor :password
+class OpenStackAPI
+ attr_accessor :identity_username
+ attr_accessor :identity_password
  attr_accessor :nova_port
  attr_accessor :nova_host
  attr_accessor :keystone_port
@@ -20,7 +19,6 @@ module Puppet::CloudPack
  attr_accessor :image_name
  attr_accessor :flavor_name
  attr_accessor :security_group
-
  def api_detect(options)
    # Default to using a token if we have one
    options['header'] = {
@@ -269,25 +267,32 @@ module Puppet::CloudPack
      json_response = http_request(path,options,'Rename instance','200',body)
  end
 
- def create_connection()
-  @token = post_xauthkey(@username,@password)
+ def create_connection(options)
+  process_options(options)
+  @token = post_xauthkey(@identity_username,@identity_password)
   @tenant_id = get_tenant_id(@tenant_name)
  end
- #post_gen_key('students')
+
+ def process_options(options)
+   options.each do |k,v|
+      instance_variable_set("@#{k}",v)
+      Puppet.info "#{k} = #{v}"
+   end
+ end
 
  def rename(name,new_name)
    #@server = get_server_id('zack')
    #  #put_rename('bob')
  end
 
- def create(name)
+ def create(options)
+   process_options(options)
    @image_id  = get_image_id(@image_name)
    @flavor_id = get_flavor_id(@flavor_name)
    @security_group_id = get_security_group_id(@security_group)
-   until post_new_server(name)
-     print '#'
+   until post_new_server(@image)
    end
-   return get_server_id(name)
+   return get_server_id(@image)
  end
 
  def rule(hash = {}, name = 'default')
