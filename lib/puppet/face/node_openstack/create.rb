@@ -26,7 +26,7 @@ Puppet::Face.define :node_openstack, '0.0.2' do
     end
 
     option '--type=' do
-      summary 'Type of instance.'
+      summary 'Type / Flavor of instance.'
       description <<-EOT
         Type of instance to be launched. The type specifies characteristics that
         a machine will have, such as memory, processing power, storage,
