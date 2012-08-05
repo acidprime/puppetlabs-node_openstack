@@ -4,7 +4,7 @@ Puppet::Face.define(:node_openstack, '0.0.2') do
   copyright "Puppet Labs", 2011
   license   "Apache 2 license; see COPYING"
 
-  action.option '--identity_username=' do
+  option '--identity_username=' do
     summary 'Open stack username'
     description <<-EOT
       Username to use with the Identity API
@@ -13,7 +13,7 @@ Puppet::Face.define(:node_openstack, '0.0.2') do
     required
   end
 
-  action.option '--identity_password=' do
+  option '--identity_password=' do
     summary 'Open stack password'
     description <<-EOT
       Password to use with the Identity API
@@ -22,7 +22,7 @@ Puppet::Face.define(:node_openstack, '0.0.2') do
     required
   end
 
-  action.option '--nova_port=' do
+  option '--nova_port=' do
     summary 'Nova compute port'
     description <<-EOT
       The nova computer API port
@@ -31,7 +31,7 @@ Puppet::Face.define(:node_openstack, '0.0.2') do
     default_to { '8774' }
   end
 
-  action.option '--nova_host=' do
+  option '--nova_host=' do
     summary 'The nova compute host'
     description <<-EOT
       The hostname or IP address of the nova compute host
@@ -39,7 +39,7 @@ Puppet::Face.define(:node_openstack, '0.0.2') do
     required
   end
 
-  action.option '--keystone_host=' do
+  option '--keystone_host=' do
     summary 'The keystone indentity api host'
     description <<-EOT
       The hostname or IP address of the keystone indentity host
@@ -47,7 +47,7 @@ Puppet::Face.define(:node_openstack, '0.0.2') do
     default_to { options[:nova_host] }
   end
 
-  action.option '--keystone_port=' do
+  option '--keystone_port=' do
     summary 'Open stack password'
     description <<-EOT
       Password to use with the Identity API
@@ -56,7 +56,7 @@ Puppet::Face.define(:node_openstack, '0.0.2') do
     default_to { '5000' }
   end
 
-  action.option '--tenant_name=' do
+  option '--tenant_name=' do
     summary 'Tenant / Group name'
     description <<-EOT
       The name of the tenant (group) name to use
@@ -64,7 +64,7 @@ Puppet::Face.define(:node_openstack, '0.0.2') do
    required
   end
 
-  action.option '--security_group=' do
+  option '--security_group=' do
     summary 'Security Group'
     description <<-EOT
       The name of the  flavor to create the instance with

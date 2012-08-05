@@ -1,6 +1,7 @@
 require 'json_openstack'
 module Puppet::CloudPack
     class << self
+    puts 'test'
     def create_connection(options)
        api = OpenStackAPI.new
        api.username  = options[:identity_username]
