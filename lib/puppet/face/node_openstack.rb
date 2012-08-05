@@ -44,7 +44,7 @@ Puppet::Face.define(:node_openstack, '0.0.2') do
     description <<-EOT
       The hostname or IP address of the keystone indentity host
     EOT
-    default_to { options[:nova_host] }
+    required
   end
 
   option '--keystone_port=' do
