@@ -6,7 +6,7 @@ require 'puppet'
 # http://api.openstack.org/
 
 module Puppet
-  class OpenStackAPI
+  class OpenStackApi
    attr_accessor :identity_username
    attr_accessor :identity_password
    attr_accessor :nova_port
