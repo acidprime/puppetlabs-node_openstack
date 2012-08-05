@@ -69,7 +69,7 @@ Puppet::Face.define(:node_openstack, '0.0.2') do
     description <<-EOT
       The name of the  flavor to create the instance with
     EOT
-  default_to { 'default' } 
+    default_to { 'default' } 
   end 
  
   summary "View and manage openstack nodes."
