@@ -17,6 +17,15 @@ Puppet::Face.define :node_openstack, '0.0.1' do
       after itself and tear down the instance.
     EOT
 
+    option '--name=' do
+      summary 'The name of your new instance'
+      description <<-EOT
+        The name of the instance to launch
+      EOT
+
+      required
+    end
+
     option '--type=' do
       summary 'Type of instance.'
       description <<-EOT
