@@ -1,6 +1,4 @@
-#!/opt/puppet/bin/ruby
 require 'net/http'
-require 'rubygems'
 require 'puppet'
 # Zack Smith
 # zack.smith@puppetlabs.com
@@ -314,3 +312,4 @@ module Puppet
      get_flavor_names(@tenant_id)
    end
   end
+end
