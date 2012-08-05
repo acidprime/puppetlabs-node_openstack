@@ -68,7 +68,7 @@ Puppet::Face.define :node_openstack, '0.0.2' do
     end
 
     when_invoked do |options|
-      api = Puppet::OpenStackAPI.new
+      api = Puppet::OpenStackApi.new
       api.create_connection(options)
       api.create(options)
     end
