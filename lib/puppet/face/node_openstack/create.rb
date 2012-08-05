@@ -1,6 +1,6 @@
 require 'puppet/cloudpack'
 require 'puppet/face/node_openstack'
-
+require 'puppet/face/json_openstack'
 Puppet::Face.define :node_openstack, '0.0.1' do
 
   action :create do
@@ -17,13 +17,6 @@ Puppet::Face.define :node_openstack, '0.0.1' do
       after itself and tear down the instance.
     EOT
 
-    Puppet::CloudPack.add_platform_option(self)
-    Puppet::CloudPack.add_availability_zone_option(self)
-    Puppet::CloudPack.add_image_option(self)
-    # TODO I am not sure if subnet should be supported
-    #Puppet::CloudPack.add_subnet_option(self)
-    Puppet::CloudPack.add_group_option(self)
-
     option '--type=' do
       summary 'Type of instance.'
       description <<-EOT
@@ -33,9 +26,6 @@ Puppet::Face.define :node_openstack, '0.0.1' do
       EOT
 
       required
-
-      # TODO - I should be able to query the list of flavors to validate against
-
     end
 
     option '--keyname=' do

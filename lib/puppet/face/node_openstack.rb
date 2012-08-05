@@ -71,14 +71,7 @@ Puppet::Face.define(:node_openstack, '0.0.1') do
     EOT
    required
   end
-  action.option '--flavor_name=' do
-    summary 'Flavor name'
-    description <<-EOT
-      The name of the  flavor to create the instance with
-    EOT
-   required
-  end
-
+  
   action.option '--security_group=' do
     summary 'Security Group'
     description <<-EOT
