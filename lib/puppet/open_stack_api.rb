@@ -18,18 +18,18 @@ module Puppet
    attr_accessor :image_name
    attr_accessor :flavor_name
    attr_accessor :security_group
-  
+
    def api_detect(options)
      # Default to using a token if we have one
      options['header'] = {
          'X-Auth-Token' => @token,
          'Content-Type' =>'application/json',}
-  
+
      case options['api']
        when 'nova'
          options['port'] = @nova_port
          options['host'] = @nova_host
-  
+
        when 'keystone'
          options['port'] = @keystone_port
          options['host'] = @keystone_host
@@ -40,7 +40,7 @@ module Puppet
      end
      return options
    end
-   
+
    def http_request(path, options = {},action = nil, expected_code = '200',data = nil)
      options = options.merge(api_detect(options))
      case options['type']
@@ -54,10 +54,10 @@ module Puppet
          http = Net::HTTP::Delete
      end
      req = http.new(path,initheader = options['header'])
-   
+
      # Set the form data
      req.body = data.to_pson if data
-   
+
      # Wrap the request in an exception handler
      begin
        response = Net::HTTP.new(options['host'], options['port']).start {|http| http.request(req) }
@@ -77,7 +77,7 @@ module Puppet
      # Return the parsed JSON response
      return handle_json_response(response, action, expected_code)
    end
-   
+
    def handle_json_response(response, action, expected_code='200')
      #Puppet.info "#{response.body}"
      if response.code == expected_code
@@ -98,13 +98,13 @@ module Puppet
        raise Puppet::Error, "Could not: #{action}, got #{response.code} expected #{expected_code} #{response.body}"
        end
    end
-  
+
    # API Calls
-  
+
    def delete_terminate_instance_by_name(name)
      delete_terminate_instance_by_id(get_server_id(name))
    end
-  
+
    def delete_terminate_instance_by_id(server_id)
      path    = "/v2/#{@tenant_id}/servers/#{server_id}" 
      options = {
@@ -112,7 +112,7 @@ module Puppet
        'type'      => 'delete',}
      json_response = http_request(path,options,'Terminate Instance','204')
    end
-  
+
    def post_xauthkey(username,password)
      path    = '/v2.0/tokens'
      body    = {
@@ -126,7 +126,7 @@ module Puppet
      json_response = http_request(path,options,'Generating Auth Key','200',body)
      return json_response['access']['token']['id']
    end
-   
+
    def post_new_server(name)
      path = "/v2/#{@tenant_id}/servers"
      body = { 'server' =>{
@@ -140,13 +140,13 @@ module Puppet
        'type'      => 'post',}
      json_response = http_request(path,options,'Creating new instance','202',body)
      begin
-       return true 
+       return true
      rescue
        return false
      end
      return false
    end
-   
+
    def post_security_group_rule(hash)
      path = "/v2/#{@tenant_id}/os-security-group-rules"
      body = { 'security_group_rule' => hash }
@@ -156,7 +156,7 @@ module Puppet
      json_response = http_request(path,options,'Creating Security Group','200',body)
      return json_response
    end
-   
+
    def post_gen_key(name)
      path = "/v2/#{@tenant_id}/os-keypairs"
      body = { 'keypair' =>{'name' => name,}}
@@ -166,7 +166,7 @@ module Puppet
      json_response = http_request(path,options,'Generate SSH Key','202',body)
      return json_response['keypair']['fingerprint']
    end
-   
+
    def get_tenant_id(name)
      path    = '/v2.0/tenants'
      options = {
@@ -179,7 +179,7 @@ module Puppet
         end
      end
    end
-   
+
    def get_server_id(name)
      path    = "/v2/#{@tenant_id}/servers"
      options = {
@@ -192,7 +192,7 @@ module Puppet
        end
      end
    end
-   
+
    def get_image_id(name)
      path    = "/v2/#{@tenant_id}/images"
      options = {
@@ -205,7 +205,7 @@ module Puppet
        end
      end
    end
-   
+
    def get_security_group_id(name)
        path    = "/v2/#{@tenant_id}/os-security-groups"
        options = {
@@ -218,7 +218,7 @@ module Puppet
        end
      end
    end
-   
+
    def get_flavor_id(name)
      path    = "/v2/#{@tenant_id}/flavors"
      options = {
@@ -231,7 +231,7 @@ module Puppet
        end
      end
    end
-   
+
    def get_flavor_names(flavor_tenant_id = nil)
      path    = "/v2/#{flavor_tenant_id}/flavors"
      options = {
@@ -250,7 +250,7 @@ module Puppet
      options = {
       'api'  => 'nova',
       'type' => 'get', }
-     json_response = http_request(path,options,'Get Keyhashes','200')     
+     json_response = http_request(path,options,'Get Keyhashes','200')
      key_hash = json_response['keypairs']
      return key_hash
    end
@@ -268,7 +268,7 @@ module Puppet
      Puppet.info key_names
      return key_names
    end
- 
+
    def get_image_details(image_tenant_id)
      path    = "/v2/#{image_tenant_id}/images/detail"
      options = {
@@ -287,26 +287,26 @@ module Puppet
        'type'      => 'put',}
        json_response = http_request(path,options,'Rename instance','200',body)
    end
-  
+
    def create_connection(options)
     process_options(options)
     @token = post_xauthkey(@identity_username,@identity_password)
     @tenant_id = get_tenant_id(@tenant_name)
     return self
    end
-  
+
    def process_options(options)
      options.each do |k,v|
         instance_variable_set("@#{k}",v)
         Puppet.info "#{k} = #{v}"
      end
    end
-  
+
    def rename(name,new_name)
      #@server = get_server_id('zack')
      #  #put_rename('bob')
    end
-  
+
    def create(options)
      process_options(options)
      @image_id  = get_image_id(@image)
@@ -316,16 +316,16 @@ module Puppet
      end
      return get_server_id(@name)
    end
-  
+
    def rule(hash = {}, name = 'default')
      hash['parent_group_id'] = get_security_group_id(name)
      post_security_group_rule(hash)
    end
-  
+
    def terminate(instance_name)
      delete_terminate_instance_by_id(instance_name)
    end
-  
+
    def key_pairs(options)
      create_connection(options)
      get_key_names(@tenant_id)
