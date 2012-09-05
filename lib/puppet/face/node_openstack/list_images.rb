@@ -1,6 +1,6 @@
 require 'puppet/face/node_openstack'
 
-Puppet::Face.define :node_openstack, '0.0.1' do
+Puppet::Face.define :node_openstack, '0.0.2' do
 
   action :list_images do
 
